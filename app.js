@@ -17,7 +17,7 @@ app.use(express.json())
 const User = require('./models/User')
 
 
-//Open route - Public route
+//ROTA PÚBLICA
 app.get('/', (req,res) =>{
     res.status(200).json({msg: 'Bem vindo a nossa API'
     })
