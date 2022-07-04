@@ -25,6 +25,7 @@ app.get('/', (req,res) =>{
 
 //Private route
 app.get('/user/:id', checkToken, async (req,res) =>{
+    //ROTA RETORNA O USUÁRIO (SE PASSADO O TOKEN NO HEADER DA REQUSIÇÃO)
     const id = req.params.id
 
     //check if user already exists.
@@ -33,11 +34,11 @@ app.get('/user/:id', checkToken, async (req,res) =>{
     if(!user){
         return res.status(404).json({msg: 'Usuário não encontrado.'})
     }
-
+    
     return res.status(200).json({user})    
     
 })
-
+//MIDDLEWARE DO JWT
 function checkToken(req,res,next){
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
@@ -143,17 +144,12 @@ app.post('/auth/login', async (req,res) =>{
     //Parte de autenticar e gerar o token
     try{
         const secret = process.env.SECRET
-
-        const token = jwt.sign(
-            {
-            id: user._id,
-            },secret
-        )
+        const token = jwt.sign({id: user._id,},secret)
 
         res.status(200).json({msg: 'Autenticação realizada com sucesso.', token})
     }catch{
         console.log(error)
-        res.status(500).json({msg: 'Ocorreu um erro no servidor. Tente novamente.', error})
+        res.status(500).json({msg: 'A autenticação falhou. Tente novamente.', error})
     }
 
 
