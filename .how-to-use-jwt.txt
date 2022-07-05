@@ -45,10 +45,11 @@ app.post('/auth/login', async (req,res) =>{
     2º passo - Nesse momento, estamos pegando a SECRET que foi configurada no sistema, o ID do usuário que logou, geranado essa assinatura (token).
 
     //jwt.sign - Para ficar mais claro, estamos gerando uma assinatura atrelando o ID do user, com o SECRET da aplicação por motivos de segurança.
-
+    //Ler de amanhã, porque eu que escrevi, e agr lendo, não entendi porra nenhuma.
     try{
         const secret = process.env.SECRET
         const token = jwt.sign({id: user._id,},secret)
+    //Nessa parte eu já não sei mais o que tá acontecendo
 
         res.status(200).json({msg: 'Autenticação realizada com sucesso.', token})
     }catch{
