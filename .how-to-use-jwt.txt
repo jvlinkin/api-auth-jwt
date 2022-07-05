@@ -42,14 +42,14 @@ app.post('/auth/login', async (req,res) =>{
     ----------------------- GERANDO O TOKEN ---------------------
 
     
-    2º passo - Nesse momento, estamos pegando a SECRET que foi configurada no sistema, o ID do usuário que logou, geranado essa assinatura (token).
+    2º passo - Ok! Usuário acertou o e-mail e a senha.
+    Nesse momento, estamos pegando a SECRET que foi configurada no sistema, o ID do usuário que logou, e gerando essa assinatura (token).
 
-    //jwt.sign - Para ficar mais claro, estamos gerando uma assinatura atrelando o ID do user, com o SECRET da aplicação por motivos de segurança.
-    //Ler de amanhã, porque eu que escrevi, e agr lendo, não entendi porra nenhuma.
+    //jwt.sign - Para ficar mais claro, estamos gerando uma assinatura atrelando o ID do user, com o SECRET da aplicação por motivos de segurança, e guardando na variável "token".
+    
     try{
         const secret = process.env.SECRET
         const token = jwt.sign({id: user._id,},secret)
-    //Nessa parte eu já não sei mais o que tá acontecendo
 
         res.status(200).json({msg: 'Autenticação realizada com sucesso.', token})
     }catch{
@@ -59,33 +59,36 @@ app.post('/auth/login', async (req,res) =>{
 
 })
 
-    ----------------------- GERANDO O TOKEN ---------------------
 
     ----------------------- FAZENDO A VERIFICAÇÃO DO TOKEN NAS ROTAS ATRAVÉS DE MIDDLEWARE ------------------
 
     3º passo - Através de um middleware passado como argumento nas rotas, iremos verificar se o token está válido, ou inválido para podermos delimitar os acessos.
 
-    here's the code bitch:
+    
 
     - Na função checkToken, pegamos o campo de autorização pelo header usando o "req.headers" sim, com um array, e em seguida separamos usando o split do JS para pegar a segunda parte desse header (token), e jogando na variable "token".
+
+    here's the code bitch:
 
     function checkToken(req,res,next){
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
+
+    //Se não tiver vindo nenhum token na requisição, retornamos um erro de acesso negado.
 
     if (!token){
         //Status 401 - Acesso negado no sistema
         return res.status(401).json({msg: "Access denied."})
     }
 
-    - Aqui fazemos a validação, se o token que está vindo do headers (que está na variável token), está atrelado ao secret da aplicação usand o jwt.verify passando como argumentos o SECRET e o Token. Pega a visão:
+    // Aqui fazemos a validação, se o token que está vindo do headers (que está na variável token), está atrelado ao secret da aplicação usand o jwt.verify passando como argumentos o SECRET e o Token. Pega a visão:
 
     
     try {
+        // Se nesse momento, o verify der erro, o token está inválido, e tem algum espertinho tentando burlar a segurança,e então ele nem chama o next(), a requisição barra no middleware e retornamos um erro 400 para a requisição.
+
         const secret = process.env.SECRET
-        jwt.verify(token, secret)
-        
-        - Se nesse momento, o verify der erro, o token está inválido, e tem algum espertinho tentando burlar a segurança,e então ele nem chama o next(), a requisição barra no middleware e retornamos um erro 400 para a requisição.
+        jwt.verify(token, secret)        
         next()
         
     } catch (error) {
@@ -96,7 +99,7 @@ app.post('/auth/login', async (req,res) =>{
     }
 }
 
-     ----------------------- FAZENDO A VERIFICAÇÃO DO TOKEN NAS ROTAS ATRAVÉS DE MIDDLEWARE ------------------
+     ----------------------- ESSE É O FLUXO DE COMO USAR O JWT (JSON WEB TOKEN) ------------------
 
 
 
